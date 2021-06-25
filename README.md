@@ -14,7 +14,7 @@
 ## Code structure
 - Most of the code is in the `code` subfolder.
 - The file containing the olfactory bulb model is [olfactory_bulb.py](code/olfactory_bulb.py).
-- An example of basic running of the model can be found in the `create_and_run_olfactory_bulb` in [datatools.py](code/datatools.py).
+- An example of basic usage of the model can be found in the `create_and_run_olfactory_bulb` in [datatools.py](code/datatools.py).
 
 
 
