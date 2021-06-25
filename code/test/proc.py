@@ -42,7 +42,7 @@ for i, fld in enumerate(["La", "Mu", "X", "V"]):
         plt.plot(data[fldf])
 
     t_final = data["t_final"]
-    plt.title(f"{fld} at t = {t_final}")
+    plt.title(f"{fld} at t = {t_final:1.3f}")
 plt.tight_layout()
 plt.show()
 fig.savefig("proc.pdf", bbox_inches="tight")
