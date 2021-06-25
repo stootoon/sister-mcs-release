@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import json
 from collections import namedtuple
-from tqdm import tqdm
 from itertools import product
 from copy import copy, deepcopy
 import olfactory_bulb
@@ -13,7 +12,6 @@ from scipy.signal import find_peaks, argrelextrema, find_peaks_cwt
 from functools import partial
 import pickle
 import util
-import pdb
 
 log = util.create_logger("datatools")
 INFO  = log.info

@@ -16,8 +16,6 @@ from olfactory_bulb import OlfactoryBulb
 import datatools as dt
 import figtools as ft
 
-import pdb
-
 logger = util.create_logger("effect_of_density")
 INFO   = logger.info
 

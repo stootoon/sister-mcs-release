@@ -16,8 +16,6 @@ from olfactory_bulb import get_x_true
 import datatools as dt
 import figtools as ft
 
-import pdb
-
 logger = util.create_logger("effect_of_size")
 INFO   = logger.info
 
