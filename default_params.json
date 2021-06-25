@@ -1,0 +1,29 @@
+{
+    "seed": 0,
+    "be": 3.0,
+    "ga": 1.0,
+    "sd": 0.1,
+    "k": 1,
+    "M": 50,
+    "N": 1200,
+    "S": 4,
+    "n_odours": 0,
+    "spread": 0,
+    "connectivity": "random",
+    "active_gcs": "all",
+    "amp": 1,    
+    "plume": {
+	"shape":"step"
+    },
+    "tau_gc": 0.035,
+    "tau_mc": 0.050,
+    "tau_pg": 0.035,    
+    "leak_pg": 0,
+    "t_on": 0.1,    
+    "t_end": 2.6,
+    "keep_till":1.1,
+    "t_off": 10.1,
+    "dt": 0.000001,
+    "noisy": 0,
+    "verbosity": 1    
+}
