@@ -29,7 +29,15 @@
   - A number of JSON files, prefixed `params` and each containing the parameter settings for a single run of the model.
   - Shell scripts that create SLURM jobs for running the model for subsets of the parameter files using [run_sisters.py](code/run_sisters.py).
 - `run_sisters.py` creates a subfolder e.g. `params123` where it stores the model output for `params123.json`.
-
+- The data for the paper were generated using the following sweeps:
+  - [gen_jobs_S_k_sweep.py](code/gen_jobs_S_k_sweep.py)
+    - The number of sisters `S` was varied from 1 to 25
+    - The number of molecules in the true odor `k` was varied from 1 to 10.
+    - 20 runs per parameter setting.
+    - `dt = 1e-6`
+    - Results stored in `sweep_S_k`.
+    - Used by [effect_of_sisters.py](code/effect_of_sisters.py).
+  
   
 
 
