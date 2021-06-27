@@ -38,7 +38,26 @@
   
 ## Model parameters
 - The default parameters around which the model was tested are in [default_params.json](default_params.json).
-
+- The parameters used in the paper are described below:
+  - `seed`: Random seed to use.
+  - `be`: l1 parameter for the prior.
+  - `ga`: l2 parameter for the prior.
+  - `sd`: Standard deviation of the noise model.
+  - `k`: Number of molecules present in the true odour (called `n` in the paper).
+  - `M`: Number of glomeruli.
+  - `N`: Number of granule cells.
+  - `S`: Number of sisters per glomerulus.
+  - `spread`: Spread between the lowest and highest concentration of the molecules present in the odour.
+  - `connectivity`: If set to `partitioned` will use partitioned connectivity between mitral and granule cells (as in Fig. 3B, and Eqn. 17 in the paper), otherwise each granule cell will connect to a randomly selected sister from each glomerulus (Fig. 3D and Eqn. 18).
+  - `amp`: The amplification factor of the inputs.
+  - `tau_[mc|gc|pg]`: Mitral/granule/periglomerular time constants.
+  - `leak_pg`: The periglomerular leak parameter (epsilon in the paper).
+  - `t_on`: Time of odour onset.
+  - `t_off`: Time odour is turned off.
+  - `t_end`: Time to simulate till.
+  - `keep_till`: Time to keep outputs till. The final time point is always kept.
+  - `dt`: Euler integration step size.
+  
 ## Code structure
 - Most of the code is in the `code` subfolder.
 - The file containing the olfactory bulb model is [olfactory_bulb.py](code/olfactory_bulb.py).
