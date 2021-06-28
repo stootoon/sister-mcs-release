@@ -51,13 +51,13 @@
   - `spread`: Spread between the lowest and highest concentration of the molecules present in the odour.
   - `connectivity`: If set to `partitioned` will use partitioned connectivity between mitral and granule cells (as in Fig. 3B, and Eqn. 17 in the paper), otherwise each granule cell will connect to a randomly selected sister from each glomerulus (Fig. 3D and Eqn. 18).
   - `amp`: The amplification factor of the inputs.
-  - `tau_[mc|gc|pg]`: Mitral/granule/periglomerular time constants.
+  - `tau_[mc|gc|pg]`: Mitral/granule/periglomerular time constants, in seconds.
   - `leak_pg`: The periglomerular leak parameter (epsilon in the paper).
   - `t_on`: Time of odour onset.
   - `t_off`: Time odour is turned off.
   - `t_end`: Time to simulate till.
   - `keep_till`: Time to keep outputs till. The final time point is always kept.
-  - `dt`: Euler integration step size.
+  - `dt`: Euler integration step size, in seconds.
   
 ## Code structure
 - Most of the code is in the `code` subfolder.
