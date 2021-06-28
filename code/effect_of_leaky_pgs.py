@@ -17,7 +17,6 @@ from olfactory_bulb import get_x_true, OlfactoryBulb
 import datatools as dt
 import figtools as ft
 import figfuns as ff
-import pdb
 
 logger = util.create_logger("effect_of_leaky_pgs")
 INFO   = logger.info

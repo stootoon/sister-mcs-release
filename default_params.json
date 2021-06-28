@@ -7,7 +7,6 @@
     "M": 50,
     "N": 1200,
     "S": 4,
-    "n_odours": 0,
     "spread": 0,
     "connectivity": "random",
     "active_gcs": "all",
