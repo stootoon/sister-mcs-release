@@ -35,6 +35,7 @@
   - `x_input.npy`: `N`-element vector containing molecular concentrations of the true odour.
   - `T.npy`: `T`-element vector containing the time points output.
   - `t_final.npy`: Scalar containing the last time point.
+  - `A10`: A 10-element vector containing the first 10 elements of the affinity matrix used.
   
 ## Model parameters
 - The default parameters around which the model was tested are in [default_params.json](default_params.json).
