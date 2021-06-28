@@ -35,14 +35,12 @@ def compute_gap(x, ind_active, normalize=True, reg=1e-12):
     return (x_in - x_out)/(np.std(x,axis=0) + reg) if normalize else (x_in - x_out)
 
 def compute_rmse_final():
-    INFO(f"Computing final RMSE data.")
-        
+    INFO(f"Computing final RMSE data.")        
     INFO(f"Loading data for random odours sweep.")
     root_folder = dt.data_folder("sweep_random_odours")        
     sweep = dt.FreeSweepDataset(root_folder, params = ["S","leak_pg"], load_on_demand = False)
     odours_data = sweep.load_sweep(warn_on_missing=False, vars=["x_MAP","x_final"])
-    rmse_fun = lambda X: np.sqrt(np.mean(X["x_final"] - X["x_MAP"])**2)
-    x_final    = odours_data
+    rmse_fun = lambda X: np.sqrt(np.mean((X["x_final"] - X["x_MAP"])**2))
     rmse_final = {(S,leak):np.array([rmse_fun(Xi) for Xi in XX]) for (S,leak), XX in odours_data.items()}
     return rmse_final
     
