@@ -16,6 +16,8 @@ from olfactory_bulb import get_x_true
 import datatools as dt
 import figtools as ft
 
+import pdb
+
 logger = util.create_logger("effect_of_size")
 INFO   = logger.info
 
@@ -73,7 +75,7 @@ def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_
                 ax.set_xticklabels([f"{lab:g}" for lab in ax.get_xticks()])
                 (icol == 0) and plt.ylabel("MC activity", labelpad=0)
                 (irow == 0) and plt.title(f"{M=}, {N=}".format(M,N,k), fontsize=9)
-                plt.xlabel("Time / sec.")
+                plt.xlabel("Time (sec.)")
             elif content == "GC":
                 n_out = 10
                 cols = []
@@ -99,7 +101,7 @@ def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_
                 
                 ax.set_yticklabels([f"{y:g}" if y in yt else "" for y in yt])
                 ax.set_xticklabels([f"{lab:g}" for lab in ax.get_xticks()])
-                plt.xlabel("Time / sec.")            
+                plt.xlabel("Time (sec.)")            
             elif content == "RMSE":
                 rmse = array([d["rmse"]/d["rmse"][0] for d in sweep[M,N,k]])
                 INFO(f"  Plotting RMSE for {len(rmse)} trials.")
@@ -117,8 +119,8 @@ def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_
 #                plt.semilogy(tt - t_on, mean_rmse, color=cm_gc(0.5))#data["rmse"]/data["rmse"][0])
                 #ax.set_yticklabels([f"{log10(yt):g}" for yt in ax.get_yticks()])
                 ax.set_xticklabels([f"{lab:g}".format(lab) for lab in ax.get_xticks()])
-                (icol == 0) and plt.ylabel("RMS Error")
-                plt.xlabel("Time / sec.")
+                (icol == 0) and plt.ylabel("RMS error")
+                plt.xlabel("Time (sec.)")
 
     INFO(f"Finalizing figure.")
     plt.tight_layout()

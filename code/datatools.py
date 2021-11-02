@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import json
 from collections import namedtuple
+from tqdm import tqdm
 from itertools import product
 from copy import copy, deepcopy
 import olfactory_bulb
@@ -16,6 +17,7 @@ import util
 log = util.create_logger("datatools")
 INFO  = log.info
 DEBUG = log.debug
+ERROR = log.error
 
 log.setLevel(logging.INFO)
 
@@ -212,7 +214,7 @@ def get_loss_function(root_folder, file_name):
 
 df_Sk = []
 SkResults = namedtuple('SkResults',['results_array','t','params_files'])
-def load_Sk(S, k, root_folder = "sweep_S_k", vars_to_load=["X", "La", "Y", "Mu", "x_final", "la_final", "mu_final", "t_final", "x_MAP"], n_max = 100, force_reload = False):
+def load_Sk(S, k, root_folder = "sweep_S_k", which_M = None, vars_to_load=["X", "La", "Y", "Mu", "x_final", "la_final", "mu_final", "t_final", "x_MAP"], n_max = 100, force_reload = False, drop_vars = []):
     """Loads all results for the specified S and k values, and for the specified variables.
 
     RETURNS
@@ -223,14 +225,23 @@ def load_Sk(S, k, root_folder = "sweep_S_k", vars_to_load=["X", "La", "Y", "Mu",
     global df_Sk
     folder = data_folder(root_folder)
     INFO(f"Loading sweep_S_k from {folder}")
-    if len(df_Sk) == 0 or force_reload == True: 
+    if len(df_Sk) == 0 or force_reload or (len(df_Sk) and which_M and (which_M not in df_Sk["M"].values)): 
         INFO("Loading df_Sk")
         df_Sk, _ = load_params_from_folder(folder)
+    else:
+        INFO(f"Not reloading df_Sk because it was already found and {force_reload=}.")
 
     # df_Sk has rows for all S and k. Subset to the ones we want.
     df = df_Sk[(df_Sk["S"]==S) & (df_Sk["k"]==k)]
+    if which_M:
+        INFO(f"Loading data for M={which_M}.")
+        df = df[df["M"] == which_M]
+        
     params_files = list(df["file"])
-    INFO("Found %d files for S = %d, k = %d.", len(params_files), S, k)
+    if not len(params_files):
+        raise FileNotFoundError("Found 0 files for S = %d, k = %d", S, k)
+    
+    INFO("Found %d files for S = %d, k = %d.", len(params_files), S, k)    
     if "x_final" not in vars_to_load:
         vars_to_load.append("x_final")
     if "la_final" not in vars_to_load:
@@ -252,13 +263,13 @@ def load_Sk(S, k, root_folder = "sweep_S_k", vars_to_load=["X", "La", "Y", "Mu",
     # Now actually load the results
     INFO(f"Loading the actual results.")        
     results_array = [load_results(folder, f[:-5], vars=vars_to_load) for f in files_to_load]
-    results_array = _post_load(results_array, files_to_load, folder)
+    results_array = _post_load(results_array, files_to_load, folder, drop_vars = drop_vars)
     # Get the params files here because _post_load sorts the results by seed.
     # So they might not be in the order the files were found above
     params_files  = [item["file"] for item in results_array]
     return SkResults(results_array=results_array, t=t, params_files=params_files)
 
-def _post_load(data, params_files, root_folder):
+def _post_load(data, params_files, root_folder, drop_vars = []):
     """Append a few additional fields to each element of the
     list of dictionaries data and return it.
     
@@ -287,7 +298,11 @@ def _post_load(data, params_files, root_folder):
             datai["rmse"]  = datai["x_rmse"]
         datai["file"]  = params_files[i]
         datai["seed"]  = load_params_from_file(root_folder, params_files[i])["seed"]
-        datai["params"]= load_default_params().update(load_params_from_file(root_folder, params_files[i]))
+        datai["params"]= load_default_params()
+        datai["params"].update(load_params_from_file(root_folder, params_files[i]))
+        for v in drop_vars:
+            if v in datai:
+                del datai[v]
     
     return sorted(data, key = lambda d:d["seed"])
 

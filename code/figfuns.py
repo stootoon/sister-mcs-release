@@ -84,21 +84,21 @@ def plot_glom1_glom2(leak = 0, S = 4, imc = [2,7], figsize=(7,8), xl = (-0.01,0.
     for i in range(len(imc)):
         INFO(f"Plotting mitral cells in glomerulus {imc[i]}.")
         axi, h = ft.plot0(results["T"] - ton, 0*results["T"], ax=plt.subplot(gs[i]), col_cyc="lightgray", plot_args={"linewidth":1})    
-        axi, h = ft.plot0(results["T"] - ton, results["La"][:,imc[i],:], ax = axi, col_cyc = cyc_mc, yticks = yt, xticks = xt, ylim = yl_mc, xlim = xl, xlabel = "Time / sec.", ylabel = "MC activity" if ylabels else None, plot_args = plot_args);
+        axi, h = ft.plot0(results["T"] - ton, results["La"][:,imc[i],:], ax = axi, col_cyc = cyc_mc, yticks = yt, xticks = xt, ylim = yl_mc, xlim = xl, xlabel = "Time (sec.)", ylabel = "MC activity" if ylabels else None, plot_args = plot_args);
         ax_mc.append(axi)
 
     n_mc = len(ax_mc)
     INFO(f"Plotting periglomerular cells in glomerulus {imc[0]}.")    
-    ax5, h = ft.plot0(results["T"] - ton, 0*results["T"], ax =plt.subplot(gs[n_mc]), col_cyc="lightgray", plot_args={"linewidth":1}, xlabel="Time / sec.")
-    ax5, h = ft.plot0(results["T"] - ton, results["Mu"][:,imc[0],:], ax = ax5, col_cyc = cyc_pg, ylim = yl_pg, yticks = yt_pg, xticks = xt, xlim = xl, xlabel = "Time / sec.", ylabel="PG activity" if ylabels else None, plot_args=plot_args);
+    ax5, h = ft.plot0(results["T"] - ton, 0*results["T"], ax =plt.subplot(gs[n_mc]), col_cyc="lightgray", plot_args={"linewidth":1}, xlabel="Time (sec.)")
+    ax5, h = ft.plot0(results["T"] - ton, results["Mu"][:,imc[0],:], ax = ax5, col_cyc = cyc_pg, ylim = yl_pg, yticks = yt_pg, xticks = xt, xlim = xl, xlabel = "Time (sec.)", ylabel="PG activity" if ylabels else None, plot_args=plot_args);
 
     INFO(f"Plotting granule cells.")        
-    ax6, h = ft.plot0(results["T"] - ton, results["X"], ax = plt.subplot(gs[n_mc+1]), col_cyc = ft.cyc_gc, plot_args = plot_args, ylim = (-0.1, 3), xlim = xl, xticks = xt, xlabel="Time / sec.", ylabel  = "GC activity" if ylabels else None, yticks = [0,1,2], yticklabels=["0","1","2"])
+    ax6, h = ft.plot0(results["T"] - ton, results["X"], ax = plt.subplot(gs[n_mc+1]), col_cyc = ft.cyc_gc, plot_args = plot_args, ylim = (-0.1, 3), xlim = xl, xticks = xt, xlabel="Time (sec.)", ylabel  = "GC activity" if ylabels else None, yticks = [0,1,2], yticklabels=["0","1","2"])
     [plt.plot(plt.xlim()[1], x, "r<", linewidth=1) for x in x_MAP[x_MAP>0.5]];
 
     INFO(f"Plotting RMSE.")            
     ax7, h = ft.plot0(results["T"] - ton, results["rmse"]/results["rmse"][0], ax = plt.subplot(gs[n_mc+2]), col_cyc = cycler(color=[cm_gc(0.9)]), plot_args = plot_args,
-                      plot_fun = "semilogy", xlim=xl, xticks = xt, ylim=(1e-4 if leak is False else 1e-3,2), xlabel="Time / sec.", ylabel="RMS error" if ylabels else None)
+                      plot_fun = "semilogy", xlim=xl, xticks = xt, ylim=(1e-4 if leak is False else 1e-3,2), xlabel="Time (sec.)", ylabel="RMS error" if ylabels else None)
 
     INFO(f"Finalizing figure.")
     plt.tight_layout(pad = 0, h_pad = 0)

@@ -62,7 +62,7 @@ def plot_transient_response(data, color=cm.Blues(0.65)):
                     xticks = ss, xticklabels=[str(i) for i in ss],
                     yticks=yt,
                     #title="Decay rates", 
-                    xlabel="S", ylabel="$\\tau$ (ms.) ", ylabel_args={"labelpad":-2})
+                    xlabel="S", ylabel="$\\tau$ (msec.) ", ylabel_args={"labelpad":-2})
 
     ax_decay.tick_params(axis="x", which="minor", bottom=False)
 

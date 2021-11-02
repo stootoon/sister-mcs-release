@@ -108,7 +108,7 @@ def plot(data, xl = [-25, 1], leak=0.5, plot_approx_for_nu=False,figsz=(8,6)):
         #plt.ylim([-2000,2000])
         #plt.gca().set_yticklabels([])
         plt.legend(fontsize=9, frameon=False, labelspacing=0, borderpad=0, handletextpad=-0.5, loc="upper right")
-        plt.xlabel("Time constant (ms)", fontsize=12)        
+        plt.xlabel("Time constant (msec.)", fontsize=12)        
         plt.ylabel("Frequency (Hz)", fontsize=12)
         plt.gca().tick_params(axis='both', which='major', labelsize=10)        
         #plt.gca().set_xticks([-15,-20])

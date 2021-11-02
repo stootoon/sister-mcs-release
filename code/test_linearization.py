@@ -23,6 +23,8 @@ import olfactory_bulb
 import datatools as dt
 import util
 
+import pdb
+
 logger = util.create_logger("test_linearization")
 INFO   = logger.info
 

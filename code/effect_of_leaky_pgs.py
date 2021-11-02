@@ -17,6 +17,7 @@ from olfactory_bulb import get_x_true, OlfactoryBulb
 import datatools as dt
 import figtools as ft
 import figfuns as ff
+import pdb
 
 logger = util.create_logger("effect_of_leaky_pgs")
 INFO   = logger.info
@@ -39,9 +40,10 @@ def compute_rmse_final():
     root_folder = dt.data_folder("sweep_random_odours")        
     sweep = dt.FreeSweepDataset(root_folder, params = ["S","leak_pg"], load_on_demand = False)
     odours_data = sweep.load_sweep(warn_on_missing=False, vars=["x_MAP","x_final"])
-    rmse_fun = lambda X: np.sqrt(np.mean((X["x_final"] - X["x_MAP"])**2))
-    rmse_final = {(S,leak):np.array([rmse_fun(Xi) for Xi in XX]) for (S,leak), XX in odours_data.items()}
-    return rmse_final
+    rmse_fun = lambda X, final: np.sqrt(np.mean((X["x_final"]*final - X["x_MAP"])**2))
+    rmse_final = {(S,leak):np.array([rmse_fun(Xi,1) for Xi in XX]) for (S,leak), XX in odours_data.items()}
+    rmse_orig  = {(S,leak):np.array([rmse_fun(Xi,0) for Xi in XX]) for (S,leak), XX in odours_data.items()}
+    return rmse_orig, rmse_final
     
 def compute_sister_correlations_data():
     INFO(f"Computing sister cell correlations data.")
@@ -277,11 +279,13 @@ def load_data(S_leak = [(8,leak) for leak in leak_vals],
     # This was to see how the sister cells relate at convergence in the leaky setting.
     sister_ratios_data  = compute_sister_ratios_data() # Uses sweep_random_odours
 
-    # Compute the rmse_final data
-    rmse_final = compute_rmse_final() # Uses sweep_random_odours
+    # Compute the rmse_[orig|final] data
+    rmse_orig, rmse_final = compute_rmse_final() # Uses sweep_random_odours
     
     INFO("Done {}.".format(inspect.stack()[0][3]))        
-    return {"results":results, "rmse":rmse, "gap":gap, "gap_final":gap_final, "x_MAP_data":x_MAP_data, "sister_ratios_data":sister_ratios_data, "rmse_final":rmse_final, "x_finals":x_finals}
+    return {"results":results, "rmse":rmse, "gap":gap, "gap_final":gap_final,
+            "x_MAP_data":x_MAP_data, "sister_ratios_data":sister_ratios_data,
+            "rmse_orig":rmse_orig, "rmse_final":rmse_final, "x_finals":x_finals}
 
 def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=ft.pop_cmaps["gc"], S_plot = 8, t_on = 0.1, subplots = None, label_order = None, fig_name = "effect_of_leaky_pgs"):
     INFO("Started {}.".format(inspect.stack()[0][3]))
@@ -399,7 +403,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
         ax_rmse.set_xlabel("Time (sec.)", labelpad=-5)        
         ax_rmse.set_xlim(-0.01,0.3)
         ax_rmse.set_xticks(arange(0,0.31,0.1))
-        ax_rmse.set_ylabel("RMS Error", labelpad=-2)
+        ax_rmse.set_ylabel("RMS error", labelpad=-2)
         ret_ax["rmse"] = ax_rmse
 
     if do_plot(["gap"]):        
@@ -484,7 +488,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
             ax_err1 = plt.subplot(get_gridspec("rel",gs[4,2]))
             x_vals  = S_vals[1:]
             y_vals  = array([mu_x_MAP[leak][1:]/mu_x_MAP[leak][1] for leak in reversed(leaks_to_plot)])        
-            ft.plot0(x_vals, y_vals.T, ax=ax_err1, col_cyc=col_cyc_r, xlabel="S", ylabel="Relative RMS Error",
+            ft.plot0(x_vals, y_vals.T, ax=ax_err1, col_cyc=col_cyc_r, xlabel="S", ylabel="Relative RMS error",
                      plot_fun="semilogx", plot_args={"linewidth":2}, yticks=[1,2,3] )
             legend([f"$\\varepsilon$={leak}" for leak in reversed(leaks_to_plot)], loc="upper left")
             ret_ax["rel"] = ax_err1
@@ -499,7 +503,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
             ax_err2 = plt.subplot(get_gridspec("rel_approx",gs[4,3]))
             x_vals  = S_vals[1:]
             y_vals  = array([mu_x_MAP_leak[leak][1:]/mu_x_MAP_leak[leak][1] for leak in reversed(leaks_to_plot)])
-            ft.plot0(x_vals, y_vals.T, ax=ax_err2, col_cyc=col_cyc_r, xlabel="S", ylabel="Relative RMS Error", plot_fun="semilogx", plot_args={"linewidth":2}, )
+            ft.plot0(x_vals, y_vals.T, ax=ax_err2, col_cyc=col_cyc_r, xlabel="S", ylabel="Relative RMS error", plot_fun="semilogx", plot_args={"linewidth":2}, )
             legend([f"$\\varepsilon$={leak}" for leak in reversed(leaks_to_plot)], loc="upper right")
             ret_ax["rel_approx"] = ax_err2
 
@@ -522,7 +526,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
         ax_ratios.set_xticks(leak_vals)
         ax_ratios.set_xticklabels([f"{lv:0.1f}" if ((not mod(int(lv*10), 2)) or lv>=1) else "" for lv in leak_vals])        
         plt.xlabel("$\\varepsilon$")
-        plt.ylabel("Coefficient of Variation")
+        plt.ylabel("Coefficient of variation")
         
         if len(S_vals) > 1:
             legend(loc="upper left")
@@ -532,15 +536,16 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
     if "rmse_final" in subplots: 
         INFO(f"Plotting final rmse data.")
         rmse_final = data["rmse_final"]
+        rmse_orig  = data["rmse_orig"]
         S_vals, leak_vals = zip(*list(rmse_final.keys()))
         S_vals    = np.unique(S_vals).astype(int)
         leak_vals = np.unique(leak_vals)
         leak_vals = leak_vals[leak_vals<=2]
         x_vals    = sorted(leak_vals[1:])
-        y_vals    = array([[mean(rmse_final[S,leak]) for leak in x_vals] for S in S_vals[1:]])
+        y_vals    = array([[mean(rmse_final[S,leak]/rmse_orig[S,leak]) for leak in x_vals] for S in S_vals[1:]])
         ax_rmsef  = plt.subplot(subplots["rmse_final"])
         ft.plot0(x_vals, y_vals.T, ax=ax_rmsef, col_cyc=cycler(color=[gc_S_cols[S] for S in S_vals[1:]]),
-                 plot_fun = "semilogy", xlabel="$\\varepsilon$", ylabel="Final RMS Error",
+                 plot_fun = "semilogy", xlabel="$\\varepsilon$", ylabel="Final RMS error",
                  xlim=(-0.1,2.1))
         ax_rmsef.set_xticks(leak_vals)
         ax_rmsef.set_xticklabels([f"{lv:0.1f}" if ((not mod(int(lv*10), 2)) or lv>=1) else "" for lv in leak_vals])
