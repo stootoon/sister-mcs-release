@@ -13,10 +13,12 @@ INFO   = logger.info
 
 import test_linearization as TestLin
 
+ob_logger = logging.getLogger("olfactory_bulb")
 
-def load_data(Sn_vals = [("sparse", 8, 20), ("sparse", 25, 20), ("dense", 25, 55)], leak_vals = [0, 0.5, 1, 2, 5]):
+def load_data(Sn_vals = [("sparse", 8, 20), ("sparse", 25, 20), ("dense", 25, 55)], leak_vals = [0, 0.5]):
     INFO("Started {}.".format(inspect.stack()[0][3]))
     data = {}
+    INFO("Running for leak_vals = {}".format(leak_vals))
     with dt.SilenceLoggers("olfactory_bulb"):
         for leak in leak_vals:
             data[leak] = {}
@@ -27,7 +29,11 @@ def load_data(Sn_vals = [("sparse", 8, 20), ("sparse", 25, 20), ("dense", 25, 55
                 TestLin._basic_setup(od, n = n, S=S, leak = leak, partitioned = False)
                 ee = np.linalg.eigvals(od.H)
                 pred_eigs, _ = TestLin.compute_predicted_eigenvalues(od)
+
+                ob_logger.setLevel(logging.INFO)
                 approx       = od.test_qxi_roots_approx(run_test = False)
+                ob_logger.setLevel(logging.WARNING)
+                
                 ob = od.ob
                 nu_min = (1 - sqrt(n/ob.M))**2
                 nu_max = (1 + sqrt(n/ob.M))**2
