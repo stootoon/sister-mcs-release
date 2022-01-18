@@ -23,8 +23,6 @@ import olfactory_bulb
 import datatools as dt
 import util
 
-import pdb
-
 logger = util.create_logger("test_linearization")
 INFO   = logger.info
 
@@ -334,8 +332,7 @@ class SparseOdour(unittest.TestCase):
         
         Equations in the manuscript: qxi, high_low"""
         INFO(f"{self.name}.test_qxi_roots_approx")
-
-        approx = self.ob.approximate_sparse_odour_eigs(nu = 1)
+        approx = self.ob.approximate_sparse_odour_eigs(self.nu)
         qxi_low_roots_approx, qxi_high_roots_approx = [approx[fld] for fld in ["low", "high"]]
         
         qxi_low_roots  = array(sorted(self.qxi_roots, key=abs)[:2]) # Get the low roots of q(ξ)
