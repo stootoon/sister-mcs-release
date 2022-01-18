@@ -126,7 +126,7 @@ class OlfactoryBulb:
         
         self.create_partitioned_sister_connectivity() if connectivity == "partitioned" else self.create_random_sister_connectivity()
         self.set_sister_cell_parameters()
-    
+
         if self.verbosity>0:
             INFO("Created new olfactory bulb.")
             self.print_params()
@@ -400,6 +400,7 @@ class OlfactoryBulb:
 
     def approximate_sparse_odour_eigs(self, nu):
         # nu is the Marchenko Pastur parameter
+        INFO(f"Approximating sparse odour eigs using {nu=}.")
         eta = 1 / (self.ga * self.sd**2)
         kmu = self.tau_mc / self.tau_pg
         kv  = self.tau_mc / self.tau_gc
