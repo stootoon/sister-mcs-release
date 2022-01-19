@@ -212,8 +212,11 @@ def get_loss_function(root_folder, file_name):
     be,ga,sd = p["be"], p["ga"], p["sd"]
     return lambda y,x: be*sum(abs(x)) + ga*sum(x**2)/2 + sum((y - np.dot(A,x))**2)/2/sd/sd
 
-df_Sk = []
+SkParams = namedtuple('SkParams', ['folder','df'])
 SkResults = namedtuple('SkResults',['results_array','t','params_files'])
+
+df_Sk = None
+
 def load_Sk(S, k, root_folder = "sweep_S_k", which_M = None, vars_to_load=["X", "La", "Y", "Mu", "x_final", "la_final", "mu_final", "t_final", "x_MAP"], n_max = 100, force_reload = False, drop_vars = []):
     """Loads all results for the specified S and k values, and for the specified variables.
 
@@ -225,14 +228,14 @@ def load_Sk(S, k, root_folder = "sweep_S_k", which_M = None, vars_to_load=["X", 
     global df_Sk
     folder = data_folder(root_folder)
     INFO(f"Loading sweep_S_k from {folder}")
-    if len(df_Sk) == 0 or force_reload or (len(df_Sk) and which_M and (which_M not in df_Sk["M"].values)): 
+    if (df_Sk is None) or force_reload or (df_Sk.folder != folder) or (len(df_Sk.df) and which_M and (which_M not in df_Sk.df["M"].values)): 
         INFO("Loading df_Sk")
-        df_Sk, _ = load_params_from_folder(folder)
+        df_Sk = SkParams(folder=folder, df=load_params_from_folder(folder)[0])
     else:
         INFO(f"Not reloading df_Sk because it was already found and {force_reload=}.")
 
     # df_Sk has rows for all S and k. Subset to the ones we want.
-    df = df_Sk[(df_Sk["S"]==S) & (df_Sk["k"]==k)]
+    df = df_Sk.df[(df_Sk.df["S"]==S) & (df_Sk.df["k"]==k)]
     if which_M:
         INFO(f"Loading data for M={which_M}.")
         df = df[df["M"] == which_M]

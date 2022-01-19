@@ -16,8 +16,6 @@ from olfactory_bulb import OlfactoryBulb
 import datatools as dt
 import figtools as ft
 
-import pdb
-
 logger = util.create_logger("effect_of_density")
 INFO   = logger.info
 
@@ -29,6 +27,7 @@ rand = np.random.rand
 def load_data(t_on = 0.1, S = 8, n_max = 20, data = None, t_decay = [2.6, 2.8], k_vals = list(range(1,11)), M_vals=[50]):
 
     def load_results_for_M(M):
+        INFO(f"Loading results for {M=}")
         if M == 50:
             data = {k: dt.load_Sk(S, k, which_M = M, vars_to_load=["x_MAP","x_final", "X"], drop_vars = ["X"], root_folder = "sweep_S_k_long", n_max = n_max) for k in k_vals}
         else:
