@@ -249,7 +249,7 @@ def load_Sk(S, k, root_folder = "sweep_S_k", which_M = None, vars_to_load=["X", 
     if "x_MAP" not in vars_to_load:
         vars_to_load.append("x_MAP")
         
-    files_to_load = params_files[:n_max]
+    files_to_load = sorted(params_files)[:n_max]
     INFO(f"Loading first {len(files_to_load)} files.")
     # Load the time index, and make sure they're all the same
     INFO(f"Loading time index from the first file.")    
@@ -413,7 +413,7 @@ class SweepDataset:
         else:
             params_and_vals = {param:self.get_param_vals(param)}
         
-        INFO(f"Loading sweep for S = {S} and parameters {list(params_and_vals.keys())}.")
+        INFO(f"Loading a maximum of {n_max=} sweep results for {S=} and parameters {list(params_and_vals.keys())}.")
         self.S = S
         for param, vals in params_and_vals.items():
             INFO(f"Loading sweep for parameter {param} = {vals}.")
@@ -438,10 +438,14 @@ class SweepDataset:
                     # p[:-5] to strip the .json
                     params_dirs = [p[:-5] for p in params_files if os.path.isdir(os.path.join(self.root_folder, p[:-5]))]
                     n_params_dirs = len(params_dirs);
-                    INFO(f"Found {n_params_files} parameter files and {n_params_dirs} corresponding directories for S = {S}, {param} = {v}.")                    
+                    INFO(f"Found {n_params_files} parameter files and {n_params_dirs} corresponding directories for S = {S}, {param} = {v}.")
+                    if n_params_dirs > n_max:
+                        INFO(f"{n_params_dirs=} > {n_max=} so loading up to {n_max} parameter directories.")
                     if n_params_dirs>0:
-                        data[v] = [load_results(self.root_folder, d, vars=vars) for d in params_dirs[:n_max]]
-                        data[v] = _post_load(data[v], params_files, self.root_folder)
+                        dirs_to_load  = params_dirs[:n_max]
+                        files_to_load = [d+".json" for d in dirs_to_load]
+                        data[v] = [load_results(self.root_folder, d, vars=vars) for d in dirs_to_load]
+                        data[v] = _post_load(data[v], files_to_load, self.root_folder)
     
             self._data[param] = data
         return self._data
@@ -647,7 +651,7 @@ class FreeSweepDataset:
         return self._data
         
         
-def describe(obj, depth = 0, full = True, prefix = ""):
+def describe(obj, depth = 0, max_depth = 10000, full = True, expand_str_keys = False, prefix = ""):
     """Gives a type description of the specified object.
     
     OPTIONAL ARGUMENTS:
@@ -657,21 +661,33 @@ def describe(obj, depth = 0, full = True, prefix = ""):
     iterate through and describe the types of the objects.
     'prefix': "" A prefix to apply to each description line.
     """
+    if depth > max_depth:
+        return
+
+    args = {"full":full, "max_depth":max_depth, "expand_str_keys":expand_str_keys}
+    
     dig_types = [list, dict]
-    spcr = " " * depth
+    spcr = "[" + f"{depth}" * depth + "] "
     if type(obj) == list:
-        print("{}LIST of {} items of type {}".format(spcr, len(obj), type(obj[0])))
-        describe(obj[0], depth = depth + 1, full = full)
+        print("{}{}LIST of {} items of type {}".format(spcr, prefix, len(obj), type(obj[0])))
+        describe(obj[0], depth = depth + 1, **args)
     elif type(obj) == dict:
-        keys = list(obj.keys())
-        print("{}DICT with keys {}".format(spcr, list(keys)))        
+        keys = sorted(list(obj.keys()))
+        print("{}{}DICT with keys {}".format(spcr, prefix, list(keys)))        
         if full is True:
-            if not any([type(obj[k]) in [dict, list] for k in keys[1:]]):
-                [describe(obj[k], depth=depth+1, prefix = "{:>8s}: ".format(str(k))) for k in keys]
+            if not any([type(obj[k]) in [dict, list] for k in keys[1:]]): #  If all the items in the dictionary arent' lists or dictionaries
+                [describe(obj[k], depth=depth+1, prefix = f"{str(k)}: ", **args) for k in keys]
             else:
-                describe(obj[keys[0]], depth = depth + 1, full = full)
+                if (type(keys[0]) is str) and expand_str_keys:
+                    for k in keys:
+                        describe(obj[k], depth = depth + 1, prefix=f"{str(k)}: ", **args)
+                else:
+                    describe(obj[keys[0]], prefix=f"{str(keys[0])}: ", depth = depth + 1, **args)
+                        
         else:
-            describe(obj[keys[0]], depth = depth + 1, full = full)
+            print(f"{spcr}{str(keys[0])}: ", end = "")
+            describe(obj[keys[0]], depth = depth + 1, **args)
+
                     
     elif type(obj) == np.ndarray:
         print("{}{}NDARRAY with shape {}".format(spcr, prefix, obj.shape))
