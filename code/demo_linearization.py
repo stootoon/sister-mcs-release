@@ -91,15 +91,15 @@ def plot(data, xl = [-25, 1], leak=0.5, plot_approx_for_nu=False,figsz=(8,6)):
                 vals = [vals[0], vals[-1]]
                 [plt.plot(real(ee), imag(ee), **styles[fld], label = labels[fld] if (not j and i < 2) else None) for j, ee in enumerate(vals)]
     
-        nu_vals = sorted(datai["approx_for_nu"].keys())
-        low     = array([datai["approx_for_nu"][nu]["low"] for nu in nu_vals])
-        high    = array([datai["approx_for_nu"][nu]["high"] for nu in nu_vals])
         if name == "sparse":
             [[plt.plot(real(ee), imag(ee), **styles[fld], label=labels[fld] if (not j and i < 2) else None) for j, ee in enumerate(approx[fld])] for fld in ["qxi_low_roots_approx", "qxi_high_roots_approx"]]
         else:
             [[plt.plot(real(ee), imag(ee), **styles[fld], label=labels[fld] if (not j and (i < 2 or "q0" in fld)) else None) for j, ee in enumerate(approx[fld])] for fld in ["q0xi_low_root_approx", "q0xi_high_roots_approx","qxi_low_roots_approx", "qxi_high_roots_approx"]]
 
         if plot_approx_for_nu:
+            nu_vals = sorted(datai["approx_for_nu"].keys())
+            low     = array([datai["approx_for_nu"][nu]["low"] for nu in nu_vals])
+            high    = array([datai["approx_for_nu"][nu]["high"] for nu in nu_vals])            
             plt.plot(real(low),  imag(low),  "k")
             plt.plot(real(high), imag(high), "k")        
 
