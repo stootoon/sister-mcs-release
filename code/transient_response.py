@@ -25,9 +25,9 @@ def drop_sweep_data(swp):
     del swp._data
     return swp
 
-def load_data(eos_args={}, eop_args={}, force_compute = False):
-    return {"eos": drop_dict_fields(dt.load_if_exists_else_compute("eos_data.p", lambda: eos.load_data(**eos_args), force_compute = force_compute), ["data"]),
-            "eop": drop_sweep_data(dt.load_if_exists_else_compute("eop_data.p", lambda: eop.find_amplitude_spectrum_peaks(eop.load_data(**eop_args)), force_compute = force_compute))}
+def load_data(eos_args={"n_max":20}, eop_args={"params":["sd"], "n_max":20}, force_compute = False):
+    return {"eos": dt.load_if_exists_else_compute("eos_data.p", lambda: drop_dict_fields(eos.load_data(**eos_args),["data"]), force_compute = force_compute),
+            "eop": dt.load_if_exists_else_compute("eop_data.p", lambda: drop_sweep_data(eop.find_amplitude_spectrum_peaks(eop.load_data(**eop_args))), force_compute = force_compute)}
 
 def plot_transient_response(data, color=cm.Blues(0.65)):
     decay, F, rmse, fr, t = [data["eos"][f] for f in ["decay", "F", "rmse", "fr", "t"]]
