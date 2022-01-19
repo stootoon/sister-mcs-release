@@ -152,8 +152,11 @@ def plot_predictions(data, order = [0,1,2,"diff_glom"], figsize=(6,5), which_exa
         ax.set_xticks(arange(len(order)))
         ax.set_xticklabels(labels=[("$\\varepsilon$" + f" = {v}") if type(v) is not str else ("$\\varepsilon$ = 0" + "\n(non-sisters)") for v in order])
         ax.tick_params(axis='x',which='major',pad=0)
-        ax_name == "full" and ax.set_ylabel("Spearman rank correlation")
+        ax_name == "full" and ax.set_ylabel("Spearman's rank correlation $\\rho$")
+        ax_name == "inset" and ax.set_ylabel("$\\rho$")
         ax_name == "inset" and ax.plot(arange(4)[:-1], [stats[k][-1] for k in order][:-1], "r.")
+
+    plt.gcf().align_labels([ax_full, ax_inset])
 
     INFO(f"Plotting responses of sister {sis_i}_0 vs {sis_j}_0 (Note: labels are 1-based)")
     ax_sis = []
