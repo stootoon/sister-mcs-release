@@ -21,7 +21,7 @@ INFO   = logger.info
 
 rand = np.random.rand
 
-def load_data(t_on = 0.1, t_decay = [0.4, 0.6], t_freq = [0.3, 0.6], kval = 3, ):
+def load_data(t_on = 0.1, t_decay = [0.4, 0.6], t_freq = [0.3, 0.6], kval = 3, **kwargs):
     INFO("Started {}.".format(inspect.stack()[0][3]))
     lev = logging.getLogger("olfactory_bulb").getEffectiveLevel()
     logging.getLogger("olfactory_bulb").setLevel(logging.WARNING)
@@ -32,7 +32,7 @@ def load_data(t_on = 0.1, t_decay = [0.4, 0.6], t_freq = [0.3, 0.6], kval = 3, )
     
     data = {}
     for S in Svals:
-        data[S], t = unpack_results(dt.load_Sk(S, k=kval))
+        data[S], t = unpack_results(dt.load_Sk(S, k=kval, **kwargs))
 
     fs = int(round(1/(t[1] - t[0])))
     INFO(f"fs: {fs}")
@@ -47,7 +47,7 @@ def load_data(t_on = 0.1, t_decay = [0.4, 0.6], t_freq = [0.3, 0.6], kval = 3, )
     vectorize_cells = lambda arr: reshape(arr, (arr.shape[0], -1))
     
     for S in Svals1:
-        data1, t = unpack_results(dt.load_Sk(S, k=kval))
+        data1, t = unpack_results(dt.load_Sk(S, k=kval, **kwargs))
         for fld in ["X","La"]:
             # Put the rmse data into time x trials format
             rmse[fld][S] = array([d[fld.lower()+"_rmse"] for d in data1]).T
