@@ -287,7 +287,7 @@ def load_data(S_leak = [(8,leak) for leak in leak_vals],
             "x_MAP_data":x_MAP_data, "sister_ratios_data":sister_ratios_data,
             "rmse_orig":rmse_orig, "rmse_final":rmse_final, "x_finals":x_finals}
 
-def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=ft.pop_cmaps["gc"], S_plot = 8, t_on = 0.1, subplots = None, label_order = None, fig_name = "effect_of_leaky_pgs"):
+def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=ft.pop_cmaps["gc"], S_plot = 8, t_on = 0.1, subplots = None, label_order = None, fig_name = "effect_of_leaky_pgs", ylabel_args = {}, plabel_args = {}):
     INFO("Started {}.".format(inspect.stack()[0][3]))
 
     xl = (-0.01,0.3)    
@@ -393,8 +393,8 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
             sy = std(yy,axis=0)
             color = gc_leak_cols[leak]
             col_cyc = cycler(color=[ft.set_alpha(0.25)(color)])
-            ft.plot0(t - t_on, yy.T, ax=ax_rmse, col_cyc=col_cyc, plot_fun="semilogy", xlim=xl, ylim=(1e-8,2), xlabel="Time (sec.)", plot_args={"linewidth":1})                
-            _, hi = ft.plot0(t - t_on, my, ax=ax_rmse, col_cyc=cycler(color=[color]), plot_fun="semilogy", xlim=xl, ylim=(1e-3,2), plot_args={"label":f"$\\varepsilon$={leak}"})            
+            ft.plot0(t - t_on, yy.T, ax=ax_rmse, col_cyc=col_cyc, plot_fun="semilogy", xlim=xl, ylim=(1e-8,2), xlabel="Time (sec.)", plot_args={"linewidth":1}, ylabel_args = ylabel_args)                
+            _, hi = ft.plot0(t - t_on, my, ax=ax_rmse, col_cyc=cycler(color=[color]), plot_fun="semilogy", xlim=xl, ylim=(1e-3,2), plot_args={"label":f"$\\varepsilon$={leak}"}, ylabel_args = ylabel_args)            
             h.append(hi)
             INFO(f"  Plotted {len(yy)} traces for {leak=}.")
 
@@ -526,7 +526,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
         ax_ratios.set_xticks(leak_vals)
         ax_ratios.set_xticklabels([f"{lv:0.1f}" if ((not mod(int(lv*10), 2)) or lv>=1) else "" for lv in leak_vals])        
         plt.xlabel("$\\varepsilon$")
-        plt.ylabel("Coefficient of variation")
+        plt.ylabel("Coefficient of variation", **ylabel_args)
         
         if len(S_vals) > 1:
             legend(loc="upper left")
@@ -546,7 +546,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
         ax_rmsef  = plt.subplot(subplots["rmse_final"])
         ft.plot0(x_vals, y_vals.T, ax=ax_rmsef, col_cyc=cycler(color=[gc_S_cols[S] for S in S_vals[1:]]),
                  plot_fun = "semilogy", xlabel="$\\varepsilon$", ylabel="Final RMS error",
-                 xlim=(-0.1,2.1))
+                 xlim=(-0.1,2.1), ylabel_args = ylabel_args)
         ax_rmsef.set_xticks(leak_vals)
         ax_rmsef.set_xticklabels([f"{lv:0.1f}" if ((not mod(int(lv*10), 2)) or lv>=1) else "" for lv in leak_vals])
         legend([f"{S=}" for S in S_vals[1:]], loc="lower right")
@@ -576,7 +576,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
 
     plt.tight_layout(pad=0, w_pad=1)
     
-    label_axes_fun = lambda ax_list: ft.label_axes(ax_list, "ABCDEFGHIJKLMNOP",fontsize=14, verticalalignment="center", horizontalalignment="left",fontweight="bold") 
+    label_axes_fun = lambda ax_list: ft.label_axes(ax_list, "ABCDEFGHIJKLMNOP",fontsize=14, verticalalignment="center", horizontalalignment="left",fontweight="bold", **plabel_args) 
 
     if subplots is None:
         label_axes_fun([ax[2],ax[0],ax[3],ax[1]] + [ax_rmse, ax_amp, ax_l0] + [ax_gap, ax_gap_z, ax_ratios] + [ax[4],ax_err1, ax_err2])

@@ -123,7 +123,7 @@ def get_data_and_example(data, which_example = "min"):
     INFO("Finished {}.".format(inspect.stack()[0][3]))        
     return la_ogs, la_ogs_mon, glom_min, sis_i, sis_j, stats, mons_sg
 
-def plot_predictions(data, order = [0,1,2,"diff_glom"], figsize=(6,5), which_example = "min"):
+def plot_predictions(data, order = [0,1,2,"diff_glom"], figsize=(6,5), which_example = "min", ylabel_args = {}, plabel_args = {}):
     INFO("Started {}.".format(inspect.stack()[0][3]))
 
     la_ogs, la_ogs_mon, glom_min, sis_i, sis_j, stats, mons_sg = get_data_and_example(data, which_example)
@@ -178,7 +178,8 @@ def plot_predictions(data, order = [0,1,2,"diff_glom"], figsize=(6,5), which_exa
         ax_sis[-1].set_ylim([0,12] if i else [-4,4])
         ax_sis[-1].set_xticks(arange(0,13,4) if i else arange(-4,5,2))
         ax_sis[-1].set_yticks(arange(0,13,4) if i else arange(-4,5,2))
-        
+
+    plt.gcf().align_labels(axs=ax_sis)        
     
     INFO(f"Plotting sister cell nonlinearities.")            
     ax3 = ax_sis[-1].inset_axes([2.5,8.25,3.5,3.5], transform = ax_sis[-1].transData)
@@ -190,36 +191,23 @@ def plot_predictions(data, order = [0,1,2,"diff_glom"], figsize=(6,5), which_exa
     yj = mon_j(t)    
     ax3.plot(t, yi, color=sis_cols[0], label=f"Sis. {sis_i+1}", linewidth=1)
     ax3.plot(t, yj, color=sis_cols[1], label=f"Sis. {sis_j+1}", linewidth=1)
-    #ax3.axhline(0, linestyle=":", color="lightgray", linewidth=1, zorder=-1)
-    #ax3.axvline(0, linestyle=":", color="lightgray", linewidth=1, zorder=-1)
+
     ax3.set_xticks(arange(-5,5.1,5))
     ax3.set_yticks(arange(0,12.1,5))
     leg = ax3.legend(loc='upper left', frameon=False, labelspacing=0, fontsize=6,
                      borderpad=0, handlelength=1, borderaxespad=0.3)
-#    for hi in leg.get_lines():
-#       hi.set_linewidth(2)
-    # print(dir(hi))
+
     ax3.set_xlabel("Model ($\lambda_i^s$)", fontsize=6, labelpad=-1);
     ax3.set_ylabel("Experiment ($\\tilde \lambda_i^s$)",fontsize=6,labelpad=-2)
     ax3.tick_params(axis='both', labelsize=6)
 
-    # INFO(f"Plotting sister cell activities for odour {which_odour}.")
-    # ax4 = plt.subplot(gs[gs.nrows//2:,2]);
-    # cols = [cm.gray(0.6) if i not in [sis_i, sis_j] else (sis_cols[0] if i == sis_i else sis_cols[1]) for i in range(S)]
-    # lws = [1 if i not in [sis_i, sis_j] else 2 for i in range(S)]
-    # ax4.set_prop_cycle(color= cols, linewidth=lws)
-    # ax4.plot(outer([1,1],arange(1,S+1)), [0*la_so_mon[which_odour], la_so_mon[which_odour].T])
-    # ax4.axhline(0, linestyle=":", color="gray", lw=1, zorder=-1)
-    # ax4.set_xticks([1]+list(range(5,26,5)))
-    # ax4.set_xlabel("Sister cell")
-    # ax4.set_ylabel("Activity\nat convergence",labelpad=-1)
-
     plt.tight_layout(h_pad=1.5, w_pad=0.5)
     ft.label_axes([ax_inset]+ax_sis,"ABCDE",fontsize=14,
                   verticalalignment="center", horizontalalignment="left",
-                  fontweight="bold", dy=0.02,dx=-0.02)
+                  fontweight="bold", **plabel_args)
 
-    output_file = "spearman_rank_new.pdf"
+    output_file = "spearman_rank_new.pdf"    
+    
     plt.savefig(output_file,bbox_inches="tight")
     INFO(f"Wrote {output_file}.")
     INFO("Finished {}.".format(inspect.stack()[0][3]))
@@ -279,97 +267,3 @@ def plot_responses(data, figsize=(6,4.5), which_odours = [0,1], which_example = 
     
 
 
-
-# def plot_predictions(data, order = [0,1,2,"diff_glom"], figsize=(8,4.5)):
-#     INFO("Started {}.".format(inspect.stack()[0][3]))
-
-#     INFO("Loading correlations data.")
-#     sr, ij, la_eps, la_eps_mon, stats, mons_sg = [data[k] for k in ["sr", "ij", "la_eps", "la_eps_mon", "stats", "mons_sg"]]
-#     row_min, glom_min = [int(w) for w in where(sr[2] == sr[2].min())]
-#     sis_i,sis_j       = ij[row_min]
-#     INFO(f"Minimum correlation of {sr[2].min():.4f} found for sisters {sis_i=} and {sis_j=} of {glom_min=}.")    
-#     la_ogs            = la_eps[2] # Get the value for ε = 2
-#     la_ogs_mon        = la_eps_mon[2]
-#     n_odours, G, S    = la_ogs.shape
-#     r                 = spearmanr(la_ogs_mon[:,glom_min,sis_i], la_ogs_mon[:,glom_min,sis_j])[0]
-# #    assert np.abs(r-stats[2][-1])<1e-12, "Correlations don't match."
-
-#     INFO(f"Found data for ε = {list(la_eps.keys())}.")
-#     INFO(f"{n_odours=}, {G=}, {S=}.")
-    
-#     plt.figure(figsize=figsize)
-#     ft.apply_styles()
-#     gs = GridSpec(8,3)
-
-#     n_inset_rows = 2    
-#     ax_full   = plt.subplot(gs[n_inset_rows:,1])
-#     ax_inset  = plt.subplot(gs[:n_inset_rows,1])
-#     for ax_name, ax in zip(["full","inset"], [ax_full, ax_inset]):
-#         INFO(f"Plotting spearman correlation, {ax_name}.")    
-#         h  = ax.bar(arange(4), [stats[k][1] for k in order],width=0.7)
-#         which_cm = cm.Greens
-#         cols = [which_cm(1.), which_cm(0.8), which_cm(0.6), cm.gray(.5)]
-#         [hi.set_facecolor(col) for hi, col in zip(h,cols)]
-#         ax.plot(outer([1,1],arange(4)), [[stats[k][m] for k in order] for m in [0,2]], "r", lw=1)
-#         ax.axhline(0,linestyle=":",color="gray")
-
-#         ax.set_ylim([min(ax.get_ylim()),1.02] if ax_name == "full" else [0.98,1.002])
-#         ax.set_xticks(arange(len(order)))
-#         ax.set_xticklabels(labels=[("$\\varepsilon$" + f" = {v}") if type(v) is not str else ("$\\varepsilon$ = 0" + "\n(non-sisters)") for v in order])
-#         ax.tick_params(axis='x',which='major',pad=0)
-#         ax_name == "full" and ax.set_ylabel("Spearman rank correlation")
-#         ax_name == "inset" and ax.plot(arange(4)[:-1], [stats[k][-1] for k in order][:-1], "r.")
-
-#     INFO(f"Plotting responses of sister {sis_i}_0 vs {sis_j}_0 (Note: labels are 1-based)")        
-#     ax2 = plt.subplot(gs[:, 0])        
-
-#     la_so_mon = la_ogs_mon[:,glom_min,:]
-#     lai    = la_so_mon[:, sis_i]
-#     laj    = la_so_mon[:, sis_j]
-
-#     which_odour = argmax(abs(la_so_mon[:, sis_i] - la_so_mon[:,sis_j]))
-#     ax2.plot(lai, laj, "o", markersize=2, color=cols[2],lw=1)
-#     ax2.plot(lai[which_odour], laj[which_odour], "o", markersize=4, color="r")
-#     xl = ax2.get_xlim()
-#     yl = ax2.get_ylim()
-#     ax2.set_xticks(arange(-6,7,3))
-#     ax2.axhline(0, linestyle=":", color="lightgray", linewidth=1, zorder=-1)
-#     ax2.axvline(0, linestyle=":", color="lightgray", linewidth=1, zorder=-1)    
-#     ax2.set_xlabel(f"Sister cell {sis_i+1} response",labelpad=0) 
-#     ax2.set_ylabel(f"Sister cell {sis_j+1} response",labelpad=1)
-
-#     INFO(f"Plotting sister cell nonlinearities.")            
-#     ax3 = plt.subplot(gs[:gs.nrows//2,2]);
-#     t = linspace(-6,6,101);
-#     sis_cols = [cm.Blues(0.5), cm.Blues(0.8)]
-#     mon_i = mons_sg[sis_i][glom_min]
-#     mon_j = mons_sg[sis_j][glom_min]
-#     yi = mon_i(t)
-#     yj = mon_j(t)    
-#     ax3.plot(t, yi, color=sis_cols[0], label=f"Sister {sis_i+1}")
-#     ax3.plot(t, yj, color=sis_cols[1], label=f"Sister {sis_j+1}")
-#     ax3.axhline(0, linestyle=":", color="lightgray", linewidth=1, zorder=-1)
-#     ax3.axvline(0, linestyle=":", color="lightgray", linewidth=1, zorder=-1)
-#     ax3.set_xticks(arange(-6,6.1,3))
-#     ax3.set_yticks(arange(-6,6.1,3))    
-#     ax3.legend(loc='upper left', frameon=False, labelspacing=0)
-#     ax3.set_xlabel("Model ($\lambda_i^s$)"); ax3.set_ylabel("Experiment ($\\tilde \lambda_i^s$)",labelpad=-1)
-
-#     INFO(f"Plotting sister cell activities for odour {which_odour}.")
-#     ax4 = plt.subplot(gs[gs.nrows//2:,2]);
-#     cols = [cm.gray(0.6) if i not in [sis_i, sis_j] else (sis_cols[0] if i == sis_i else sis_cols[1]) for i in range(S)]
-#     lws  = [1 if i not in [sis_i, sis_j] else 2 for i in range(S)]
-#     ax4.set_prop_cycle(color= cols, linewidth=lws)
-#     ax4.plot(outer([1,1],arange(1,S+1)), [0*la_so_mon[which_odour], la_so_mon[which_odour].T])
-#     ax4.axhline(0, linestyle=":", color="gray", lw=1, zorder=-1)
-#     ax4.set_xticks([1]+list(range(5,26,5)))
-#     ax4.set_xlabel("Sister cell")
-#     ax4.set_ylabel("Activity\nat convergence",labelpad=-1)
-#     plt.tight_layout(h_pad=0, w_pad=0)
-#     ft.label_axes([ax2,ax_inset,ax3,ax4],"ABCDE",fontsize=14, verticalalignment="center", horizontalalignment="left",fontweight="bold", dy=0.02)
-
-#     output_file = "spearman_rank_new.pdf"
-#     plt.savefig(output_file,bbox_inches="tight")
-#     INFO(f"Wrote {output_file}.")
-#     INFO("Finished {}.".format(inspect.stack()[0][3]))
-    

@@ -43,7 +43,7 @@ def load_data(Sn_vals = [("sparse", 8, 20), ("sparse", 25, 20), ("dense", 25, 55
         INFO("Finished {}.".format(inspect.stack()[0][3]))    
     return data
         
-def plot(data, xl = [-25, 1], leak=0.5, plot_approx_for_nu=False,figsz=(8,6)):
+def plot(data, xl = [-25, 1], leak=0.5, plot_approx_for_nu=False,figsz=(8,6), ylabel_args={}, plabel_args={}):
     INFO("Started {}.".format(inspect.stack()[0][3]))
     mc_col = "dodgerblue" # ft.pop_cmaps["mc"](0.5)
     gc_col = "orange" # ft.pop_cmaps["gc"](0.6)
@@ -62,13 +62,13 @@ def plot(data, xl = [-25, 1], leak=0.5, plot_approx_for_nu=False,figsz=(8,6)):
         if k!="actual":
             styles[k]["markeredgewidth"] = mew
     
-    labels = {"qxi_low_roots_approx":"$\\xi^{low}$",
-              "qxi_high_roots_approx":"$\\xi^{high}$",
-              "q0xi_low_root_approx":"$\\xi^{low}_{\\nu=0}$",
-              "q0xi_high_roots_approx":"$\\xi^{high}_{\\nu=0}$",
+    labels = {"qxi_low_roots_approx":"$\\xi^{\\rm{low}}$",
+              "qxi_high_roots_approx":"$\\xi^{\\rm{high}}$",
+              "q0xi_low_root_approx":"$\\xi^{\\rm{low}}_{\\nu=0}$",
+              "q0xi_high_roots_approx":"$\\xi^{\\rm{high}}_{\\nu=0}$",
               "static": "decay$_\\mu$",
               "v0_decaying":"decay$_\\lambda$",
-              "v0_oscillating":"$\\xi^{mp}$"}
+              "v0_oscillating":"$\\xi^{\\rm{mp}}$"}
 
     plt.figure(figsize=figsz)
 
@@ -115,7 +115,7 @@ def plot(data, xl = [-25, 1], leak=0.5, plot_approx_for_nu=False,figsz=(8,6)):
         #plt.gca().set_yticklabels([])
         plt.legend(fontsize=9, frameon=False, labelspacing=0, borderpad=0, handletextpad=-0.5, loc="upper right")
         plt.xlabel("Time constant (msec.)", fontsize=12)        
-        plt.ylabel("Frequency (Hz)", fontsize=12)
+        plt.ylabel("Frequency (Hz)", fontsize=12, **ylabel_args)
         plt.gca().tick_params(axis='both', which='major', labelsize=10)        
         #plt.gca().set_xticks([-15,-20])
         #yt = np.arange(-2000,2001,1000)
@@ -124,7 +124,7 @@ def plot(data, xl = [-25, 1], leak=0.5, plot_approx_for_nu=False,figsz=(8,6)):
         #[plt.gca().spines["left"].set_visible(False), plt.gca().set_yticks([])]
     plt.tight_layout()
             
-    ft.label_axes(ax, "AB", fontsize=14, fontweight="bold", dy=[0.0]*3 + [0]*3, dx = 0)
+    ft.label_axes(ax, "AB", fontsize=14, fontweight="bold", **plabel_args)
     file_name = f"demo_lin_{leak=:1.1f}" + ("_nuaprx" if plot_approx_for_nu else "") + ".pdf"
     plt.savefig(file_name, bbox_inches="tight")
     INFO(f"Wrote {file_name}.")

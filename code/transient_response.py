@@ -29,7 +29,7 @@ def load_data(eos_args={"n_max":20}, eop_args={"params":["sd"], "n_max":20}, for
     return {"eos": dt.load_if_exists_else_compute("eos_data.p", lambda: drop_dict_fields(eos.load_data(**eos_args),["data"]), force_compute = force_compute),
             "eop": dt.load_if_exists_else_compute("eop_data.p", lambda: drop_sweep_data(eop.find_amplitude_spectrum_peaks(eop.load_data(**eop_args))), force_compute = force_compute)}
 
-def plot_transient_response(data, color=cm.Blues(0.65)):
+def plot_transient_response(data, color=cm.Blues(0.65), ylabel_args = {}, plabel_args = {}):
     decay, F, rmse, fr, t = [data["eos"][f] for f in ["decay", "F", "rmse", "fr", "t"]]
 
     plt.figure(figsize=(8,3))
@@ -90,6 +90,7 @@ def plot_transient_response(data, color=cm.Blues(0.65)):
                  xticks = log(xt), xticklabels = [xtf(s) for s in xt],             
                  yticks = log(yt), yticklabels = yt_lab,
                  xlabel = x_lab,  ylabel = "Frequency (Hz)",
+                 ylabel_args = ylabel_args,
         )
 
         
@@ -126,9 +127,9 @@ def plot_transient_response(data, color=cm.Blues(0.65)):
     )
     ax_freq2.set_ylim(yl)
 
-    plt.tight_layout(pad = 0, w_pad = 1, h_pad=0)
+    plt.tight_layout(pad = 0, w_pad = 1.5, h_pad=0)
     ft.label_axes([ax_freq1, ax_freq2,ax_decay], "ABC",fontsize=14,
-                  verticalalignment="center", horizontalalignment="left",fontweight="bold")
+                  verticalalignment="center", horizontalalignment="left",fontweight="bold", **plabel_args)
     fig_file = f"transient_response.pdf"
     logger.info(f"Saving as {fig_file}.")    
     plt.savefig(fig_file, bbox_inches="tight")

@@ -39,7 +39,7 @@ def load_data():
     return sweep
 
 
-def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_gc=ft.pop_cmaps["gc"], glom_target = 0.5, which_trial = 0, xl=(-0.05,0.4)):
+def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_gc=ft.pop_cmaps["gc"], glom_target = 0.5, which_trial = 0, xl=(-0.05,0.4), plabel_args={}, ylabel_args={}):
     INFO("Started {}.".format(inspect.stack()[0][3]))
     sweep = figure_data
     plt.figure(figsize=(8,6)); gs = GridSpec(3,4)
@@ -73,7 +73,7 @@ def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_
                                 ylim = yl, xlim = xl, xticks=xt, plot_args={"linewidth":1})
                 ax.set_yticklabels([f"{y:g}" for y in yt])
                 ax.set_xticklabels([f"{lab:g}" for lab in ax.get_xticks()])
-                (icol == 0) and plt.ylabel("MC activity", labelpad=0)
+                (icol == 0) and ax.set_ylabel("MC activity", **ylabel_args)
                 (irow == 0) and plt.title(f"{M=}, {N=}".format(M,N,k), fontsize=9)
                 plt.xlabel("Time (sec.)")
             elif content == "GC":
@@ -97,7 +97,7 @@ def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_
                                 plot_args={"linewidth":1})
                 
                 [plt.plot(plt.xlim()[1], x, "r<", linewidth=1) for x in x_MAP[x_MAP>0.5]]
-                (icol == 0) and plt.ylabel("GC activity", labelpad=0)
+                (icol == 0) and plt.ylabel("GC activity", **ylabel_args)
                 
                 ax.set_yticklabels([f"{y:g}" if y in yt else "" for y in yt])
                 ax.set_xticklabels([f"{lab:g}" for lab in ax.get_xticks()])
@@ -119,14 +119,16 @@ def plot_effect_of_size(figure_data, t_on = 0.1, cm_mc = ft.pop_cmaps["mc"], cm_
 #                plt.semilogy(tt - t_on, mean_rmse, color=cm_gc(0.5))#data["rmse"]/data["rmse"][0])
                 #ax.set_yticklabels([f"{log10(yt):g}" for yt in ax.get_yticks()])
                 ax.set_xticklabels([f"{lab:g}".format(lab) for lab in ax.get_xticks()])
-                (icol == 0) and plt.ylabel("RMS error")
+                (icol == 0) and ax.set_ylabel("RMS error", **ylabel_args)
                 plt.xlabel("Time (sec.)")
 
+    plt.gcf().align_ylabels([all_ax[i,0] for i in range(2)])
+    
     INFO(f"Finalizing figure.")
     plt.tight_layout()
-    plt.gcf().align_ylabels()    
+
     labs = "ABCDEFGHIJKL"
-    ft.label_axes([all_ax[r,0] for r in range(3)], labs, fontsize=14, verticalalignment="bottom", horizontalalignment="left",fontweight="bold")
+    ft.label_axes([all_ax[r,0] for r in range(3)], labs, fontsize=14, verticalalignment="bottom", horizontalalignment="left",fontweight="bold", **plabel_args)
     fig_file = "effect_of_size.pdf"
     INFO(f"Saving as {fig_file}.")    
     plt.savefig(fig_file, bbox_inches="tight")

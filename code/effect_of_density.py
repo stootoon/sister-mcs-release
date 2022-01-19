@@ -77,7 +77,7 @@ def load_data(t_on = 0.1, S = 8, n_max = 20, data = None, t_decay = [2.6, 2.8], 
     return results
 
 
-def plot_effect_of_density(data, ton = 0.1, n_low = 3, n_high = 10, M_vals = [50], xlim_decay_high = [0.4, 0.6], xlim_decay_low = [0.4, 0.6], ylim_decay=None, which_trial_low=0, which_trial_high=0):
+def plot_effect_of_density(data, ton = 0.1, n_low = 3, n_high = 10, M_vals = [50], xlim_decay_high = [0.4, 0.6], xlim_decay_low = [0.4, 0.6], ylim_decay=None, which_trial_low=0, which_trial_high=0, plabel_args=None):
     INFO("Started {}.".format(inspect.stack()[0][3]))
     base_M = M_vals[0]
     results = data[base_M]
@@ -157,6 +157,8 @@ def plot_effect_of_density(data, ton = 0.1, n_low = 3, n_high = 10, M_vals = [50
     plt.yticks([1,5,9])
     plt.xlabel("$n$", labelpad=-1)
     plt.legend(**lgnd_frmt)
+
+    plt.gcf().align_labels(ax)
     
     INFO("Plotting time course of recovery.")
     n_plot = [3,6,10]
@@ -175,7 +177,7 @@ def plot_effect_of_density(data, ton = 0.1, n_low = 3, n_high = 10, M_vals = [50
 
     INFO("Finalizing figure.")
     plt.tight_layout()
-    ft.label_axes(ax, "ABCD",fontsize=14, verticalalignment="center", horizontalalignment="left",fontweight="bold")    
+    ft.label_axes(ax, "ABCD",fontsize=14, verticalalignment="center", horizontalalignment="left",fontweight="bold", **plabel_args)    
     fig_file = "effect_of_density.pdf"
     INFO(f"Saving as {fig_file}.")    
     plt.savefig(fig_file, bbox_inches="tight")
