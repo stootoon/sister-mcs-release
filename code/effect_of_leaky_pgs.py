@@ -574,7 +574,7 @@ def plot_effect_of_leaky_pgs(data, iglom = 2, cm_mc = ft.pop_cmaps["mc"], cm_gc=
 
     INFO("Finalizing figure.")
 
-    plt.tight_layout(pad=0, h_pad=1)
+    plt.tight_layout(pad=0, w_pad=1)
     
     label_axes_fun = lambda ax_list: ft.label_axes(ax_list, "ABCDEFGHIJKLMNOP",fontsize=14, verticalalignment="center", horizontalalignment="left",fontweight="bold") 
 

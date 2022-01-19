@@ -126,7 +126,7 @@ def plot_transient_response(data, color=cm.Blues(0.65)):
     )
     ax_freq2.set_ylim(yl)
 
-    plt.tight_layout(pad = 0, w_pad = -0, h_pad=0)
+    plt.tight_layout(pad = 0, w_pad = 1, h_pad=0)
     ft.label_axes([ax_freq1, ax_freq2,ax_decay], "ABC",fontsize=14,
                   verticalalignment="center", horizontalalignment="left",fontweight="bold")
     fig_file = f"transient_response.pdf"
