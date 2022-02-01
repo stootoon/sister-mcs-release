@@ -1,5 +1,5 @@
 # Olfactory bulb model with sister mitral cells
-- Code used for the simulations and figures in Tootoonian et al. 2021.
+- Code used for the simulations and figures in [Tootoonian et al. 2022](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009808).
 
 ## Requirements
 - Code was written and tested using Python 3.8.5 provided by Anaconda.
